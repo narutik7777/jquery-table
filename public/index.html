@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+
+  </head>
+  <style>
+    h2 {
+      text-align: center;
+    }
+
+    table caption {
+      padding: 0.5em 0;
+    }
+
+    @media screen and (max-width: 767px) {
+      table caption {
+        border-bottom: 1px solid #ddd;
+      }
+    }
+
+    .p {
+      text-align: center;
+      padding-top: 140px;
+      font-size: 14px;
+    }
+
+    .button-add-student {
+      margin-bottom: 35px;
+    }
+
+    .form-11 {
+      color: white;
+    }
+
+    .form-11:hover {
+      text-decoration: none !important;
+    }
+
+    .clicker {
+      cursor: pointer;
+    }
+    .check-css {
+        margin-left: 35px;
+    }
+  </style>
+
+  <body>
+    <h2>Table with Bootstrap</h2>
+    <div class="container">
+      <div class="row" style="margin-bottom: 40px;">
+        <input
+          type="search"
+          id="myInput"
+          onkeyup="myFunction()"
+          name="search"
+          placeholder="Search"
+        />
+      </div>
+      <div class="row">
+        <button type="button" class="btn btn-success button-add-purchase">
+          <a href="formAddProducts.html" class="form-11">Add product</a>
+        </button>
+      </div>
+      <div class="row">
+        <div class="colName-xs-12">
+          <div class="table-responsive">
+            <table
+              class="table table-bordered table-hover sortable display"
+              id="table"
+            >
+              <thead id="table-head">
+                <tr class="bgColor" id="list-header">
+                  <th class="sorttable_nosort">
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-sm"
+                      id="checkall"
+                    >
+                    select all
+                    </button>
+                  </th>
+                  <th class="clicker">name</th>
+                  <th class="clicker">count</th>
+                  <th class="clicker">email</th>
+                  <th class="clicker">price</th>
+                  <th class="sorttable_nosort">Option</th>
+                </tr>
+              </thead>
+              <tbody id="tb"></tbody>
+            </table>
+          </div>
+          <!--end of .table-responsive-->
+        </div>
+      </div>
+      <div class="row">
+        <div onclick="deleteCheckbox()">
+          <button type="button" class="btn btn-success">Delete all</button>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/axios@0.19.0/dist/axios.js"></script>
+    <script src="sortTable.js"></script>
+
+    <script>
+      // Make a request for a product with a given ID
+      axios
+        .get("http://localhost:3000/products")
+        .then(function(response) {
+          // handle success
+          var p = response.data;
+          var k = "<tbody>";
+          for (i = 0; i < p.length; i++) {
+            k += "<tr>";
+            k += `<td>
+                            <input class="form-check-input check check-css" type="checkbox" value="${p[i].id}">
+                </td>`;
+            k += "<td>" + p[i].name + "</td>";
+            k += "<td>" + p[i].counts + "</td>";
+            k += "<td>" + p[i].email + "</td>";
+            k += "<td>" + p[i].price + "</td>";
+
+            k += `<td>
+                            <button type="button" class="btn btn-success"><span><a href="./editTable.html?id=${p[i].id}">edit</a></span></button>
+                            <button type="button" onclick="deleteProduct(${p[i].id}, this)" class="btn btn-danger">delete</button>
+                </td>`;
+            k += "</tr>";
+          }
+          k += "</tbody>";
+          document.getElementById("tb").innerHTML = k;
+          // console.log(response);
+        })
+        .catch(function(error) {
+          // handle error
+          console.log(error);
+        })
+        .finally(function() {
+          // always executed
+        });
+
+      // allow deleting the information
+      function deleteProduct(getId, removeB) {
+
+        var checkConfirm = confirm("\n" +
+                "You may want to delete ?\" ?");
+
+        if (checkConfirm) {
+          axios
+            .delete(`http://localhost:3000/products/${getId}`)
+            //  delete then k for reloading the page
+            .then(function(response) {
+              $(removeB)
+                .parent()
+                .parent()
+                .hide(800);
+            });
+        }
+      }
+
+      // Select all or deselect all checkboxes
+      let el = document.getElementById("checkall");
+      el.onclick = checkAll; //again, function reference, no ()
+      // v1
+      function checkAll() {
+        var inputs = document.querySelectorAll(".check");
+        for (var i = 0; i < inputs.length; i++) {
+          inputs[i].checked = true;
+        }
+
+        this.onclick = uncheckAll;
+      }
+
+      function uncheckAll() {
+        var inputs = document.querySelectorAll(".check");
+        for (var i = 0; i < inputs.length; i++) {
+          inputs[i].checked = false;
+        }
+
+        this.onclick = checkAll; //function reference to original function
+      }
+
+      //delete all checkbox
+      function deleteCheckbox() {
+        let $checked = $('input[type="checkbox"]:checked');
+        let r = confirm("Delete the selected part!");
+        if (r == true) {
+          if ($checked.length > 0) {
+            $checked.each(function() {
+              axios({
+                method: "DELETE",
+                url: "http://localhost:3000/products/" + this.value
+              });
+              $(this)
+                .parent()
+                .parent()
+                .hide(400);
+            });
+          }
+        }
+      }
+      // end delete all checkbox
+
+      function myFunction() {
+        const filter = document.querySelector("#myInput").value.toUpperCase();
+        const trs = document.querySelectorAll("#table tr:not(.header)");
+        trs.forEach(
+          tr =>
+            (tr.style.display = [...tr.children].find(td =>
+              td.innerHTML.toUpperCase().includes(filter)
+            )
+              ? ""
+              : "none")
+        );
+      }
+
+    </script>
+  </body>
+</html>

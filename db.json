@@ -1,0 +1,25 @@
+{
+  "products": [
+    {
+      "name": "Meizu",
+      "count": "4",
+      "email": "ricardo5555@gmail",
+      "phone": "",
+      "id": 4
+    },
+    {
+      "name": "Xiaomi",
+      "counts": "1",
+      "email": "tras@mail.ru",
+      "price": "4",
+      "id": 5
+    },
+    {
+      "name": "",
+      "counts": "",
+      "email": "",
+      "price": "",
+      "id": 7
+    }
+  ]
+}

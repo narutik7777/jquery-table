@@ -1,0 +1,17 @@
+{
+    "name": "jquery-ajax-example",
+    "version": "1.0.0",
+    "description": " jQuery table Ajax",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "keywords": [
+        "jquery",
+        "ajax",
+        "bootstrap"
+    ],
+    "author": "Ilyas Gazizov",
+    "dependencies": {
+        "json-server": "^0.15.0"
+    }
+}
